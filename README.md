@@ -51,6 +51,10 @@ Just run ``cargo build --release``.
 The binary will be stored in the "target" folder:
 `target/release/wordlist-dedup`.
 
+If you are using a GNU/Linux based operating system, you can also use the
+already build binary by the CD workflow. Head over to the 
+[release tab](https://github.com/MichaelSasser/wordlist-dedup/releases).
+
 ## Semantic Versioning
 
 This repository uses [SemVer](https://semver.org/) for its release cycle.
