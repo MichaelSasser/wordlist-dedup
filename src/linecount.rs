@@ -16,3 +16,4 @@ pub fn count_lines<R: io::Read>(handle: R) -> Result<u64, io::Error> {
     }
     Ok(count)
 }
+

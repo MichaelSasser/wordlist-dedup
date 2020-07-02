@@ -38,7 +38,13 @@ impl Iterator for BufReader {
 
         self.reader
             .read_line(buf)
-            .map(|u| if u == 0 { None } else { Some(Rc::clone(&self.buf)) })
+            .map(|u| {
+                if u == 0 {
+                    None
+                } else {
+                    Some(Rc::clone(&self.buf))
+                }
+            })
             .transpose()
     }
 }
@@ -66,3 +72,4 @@ impl SizeOf for BufReader {
 fn new_buf() -> Rc<String> {
     Rc::new(String::with_capacity(1024))
 }
+
