@@ -2,13 +2,13 @@
 
 wordlist-dedup is a program written in rust to deduplicate wordlists. Duh.
 
-I tried to deduplicate lines of a hugh wordlist (>80 GB) with GNU/coreutils 
+I tried to deduplicate lines of a huge wordlist (>80 GB) with GNU/coreutils 
 `uniq`. First everything seemed to be hunky dory. Before I deleted the original
 file I spotted the size of the deduplicated. It was about half of the original.
 In the firsthand I suspected about 5 % duplicates duplicates.
 
 To check this, I wrote a program to count the duplicates and Bingo! The
-original file had jist a smidgen over 3 % of duplicates.
+original file had just a smidgen over 3 % of duplicates.
 
 Maybe I did something wrong or my PC was not able to handle the memory 
 consumption of uniq. I don't know, why it needs that much memory and is so 
@@ -25,7 +25,7 @@ wordlist-dedup.
 
 wordlist-dedup as a pure commandline tool. Keep in mind, the file must be 
 sorted before running it. You can use GNU/coreutils `sort`, which does a fine
-job, even, when the RAM is limited. This means, the file cann be larger then
+job, even, when the RAM is limited. This means, the file can be larger then
 the available RAM. wordlist-dedup does barely use any RAM.
 You can use it to deduplicate a file like:
 
@@ -48,7 +48,7 @@ other scenarios.
 
 Just run ``cargo build --release``.
 
-The binarywill be stored in ther "target" folder:
+The binary will be stored in the "target" folder:
 `target/release/wordlist-dedup`.
 
 ## Semantic Versioning
