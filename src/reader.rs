@@ -4,7 +4,8 @@ use std::{
     rc::Rc,
 };
 
-const LF: u8 = '\n' as u8;
+// const LF: u8 = '\n' as u8;
+const LF: u8 = b'\n';
 
 pub struct BufReader {
     reader: io::BufReader<File>,
