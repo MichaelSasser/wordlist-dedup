@@ -44,12 +44,20 @@ outputfile `file_uniq.ext`.
 Keep in mind, it was made for one job, to sort wordlists. It might work in 
 other scenarios.
 
+If you like to use my scripts to dedup as many files as you like in one folder
+check out my 
+[Gist](https://gist.github.com/MichaelSasser/631f297e60f2d2a6cb6d76dfde12e6e4).
+
 ## Installation
 
-Just run ``cargo build --release``.
+Just run `cargo build --release`.
 
 The binary will be stored in the "target" folder:
 `target/release/wordlist-dedup`.
+
+If you are using a GNU/Linux based operating system, you can also use the
+already build binary by the CD workflow. Head over to the 
+[release tab](https://github.com/MichaelSasser/wordlist-dedup/releases).
 
 ## Semantic Versioning
 
