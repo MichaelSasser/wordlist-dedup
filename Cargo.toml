@@ -3,6 +3,9 @@ name = "wordlist-dedup"
 version = "0.1.1"
 authors = ["Michael Sasser <Michael@MichaelSasser.org>"]
 edition = "2018"
+license = "GPL-3.0+"
+keywords = ["deduplication", "wordlist"]
+publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
