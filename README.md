@@ -30,7 +30,7 @@ the available RAM. wordlist-dedup does barely use any RAM.
 You can use it to deduplicate a file like:
 
 ```
-$ wordlist-dedup some_file_with_dups.txt some_file_without_dups.txt
+$ wordlist-dedup some_file_with_dups.txt new_file_to_write_to.txt
 ⠏ Done. Found 410 duplicates.
 ```
 
