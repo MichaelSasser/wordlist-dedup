@@ -4,7 +4,6 @@ use std::{
     rc::Rc,
 };
 
-// const LF: u8 = '\n' as u8;
 const LF: u8 = b'\n';
 
 pub struct BufReader {
@@ -49,6 +48,7 @@ impl Iterator for BufReader {
             .transpose()
     }
 }
+
 pub trait SizeOf {
     fn size_of(&mut self) -> Result<u64, io::Error>;
 }
@@ -73,4 +73,3 @@ impl SizeOf for BufReader {
 fn new_buf() -> Rc<String> {
     Rc::new(String::with_capacity(1024))
 }
-
