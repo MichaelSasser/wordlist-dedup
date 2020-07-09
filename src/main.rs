@@ -1,5 +1,5 @@
+use clap::{App, Arg};
 use indicatif::{ProgressBar, ProgressStyle};
-use std::env;
 use std::ffi::OsStr;
 use std::fs::File;
 use std::io::BufWriter;
@@ -18,44 +18,62 @@ fn remove_extension_from_filename(filename: &str) -> Option<&str> {
 }
 
 fn main() -> std::io::Result<()> {
-    let args: Vec<String> = env::args().collect();
-    //println!("{:?}", args);
-    if args.len() < 2 {
-        std::process::exit(1);
-    }
-    let input_filename: &str;
-    let mut output_filename = "";
-    let mut new_output_filename = String::from("");
-    match args.len() {
-        2 => {
-            input_filename = &args[1];
-            let ext = match get_extension_from_filename(input_filename) {
+    let matches = App::new("wordlist-dedup")
+        .version("0.1.1")
+        .author("Michael Sasser <Michael@MichaelSasser.org>")
+        .about("Deduplicate presorted wordlists.")
+        .arg(
+            Arg::with_name("SRC")
+                .required(true)
+                .help("The presorted source file, wich may contains duplicated lines"),
+        )
+        .arg(
+            Arg::with_name("DEST")
+                .required(false)
+                .help("The destination file, to write the deduplicated file to"),
+        )
+        .get_matches();
+
+    let src_file = matches.value_of("SRC").unwrap();
+    // println!("The file passed is: {}", myfile);
+
+    // let dest_file = matches.value_of("DEST").unwrap_or("input.txt");
+    let mut new_dest_file = String::from("");
+    let mut dest_file;
+    dest_file = match matches.value_of("DEST") {
+        Some(t) => t,
+        None => {
+            let ext = match get_extension_from_filename(src_file) {
                 Some(t) => t,
                 None => "",
             };
-            let out_file_stem = match remove_extension_from_filename(input_filename) {
+            let out_file_stem = match remove_extension_from_filename(src_file) {
                 Some(t) => t,
                 None => "",
             };
-            new_output_filename = format!("{}_uniq.{}", out_file_stem, ext);
+            new_dest_file = format!("{}_uniq.{}", out_file_stem, ext);
+            ""
         }
-        3 => {
-            input_filename = &args[1];
-            output_filename = &args[2];
-        }
-        _ => std::process::exit(1),
     };
-    if !new_output_filename.is_empty() {
-        output_filename = new_output_filename.as_str();
+
+    // let args: Vec<String> = env::args().collect();
+    // let mut new_dest_file = String::from("");
+
+    if !new_dest_file.is_empty() {
+        dest_file = new_dest_file.as_str();
     }
 
-    // println!("Inputfile:  {}", input_filename);
-    // println!("Outputfile: {}", output_filename);
+    if dest_file == src_file {
+        println!("The source file must be different from the destination file.");
+    }
 
-    let out_path = Path::new(output_filename);
-    let lines = reader::BufReader::open(input_filename)?;
+    // println!("Inputfile:  {}", src_file);
+    // println!("Outputfile: {}", dest_file);
+
+    let out_path = Path::new(dest_file);
+    let buf_reader = reader::BufReader::open(src_file)?;
     let output = File::create(out_path)?;
-    let mut writer = BufWriter::new(output);
+    let mut buf_writer = BufWriter::new(output);
     let mut line_last: Rc<String> = Rc::new(String::from(""));
     let mut dups: u64 = 0;
 
@@ -70,7 +88,7 @@ fn main() -> std::io::Result<()> {
     );
     pb.set_message("Checking for duplicates...");
 
-    for line in lines {
+    for line in buf_reader {
         let line_cur = match line {
             Ok(t) => t,
             Err(_) => {
@@ -79,14 +97,15 @@ fn main() -> std::io::Result<()> {
         };
         if line_cur == line_last {
             dups += 1;
-        //println!("Found DUP: {:?} and {:?}", line_cur, line_last)
+        // for debug purpose uncomment this line:
+        // println!("Found DUP: {:?} and {:?}", line_cur, line_last)
         } else {
-            write!(writer, "{}", line_cur)?;
+            write!(buf_writer, "{}", line_cur)?;
         }
         line_last = line_cur;
     }
     let msg = format!("Done. Found {} duplicates.", dups);
-    writer.flush().unwrap();
+    buf_writer.flush().unwrap();
     pb.finish_with_message(msg.as_str());
     Ok(())
 }
