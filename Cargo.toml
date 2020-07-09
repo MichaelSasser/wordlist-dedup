@@ -11,3 +11,4 @@ publish = false
 
 [dependencies]
 indicatif = "0.15.0"
+clap = "2.33.1"
