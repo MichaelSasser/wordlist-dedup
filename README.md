@@ -23,13 +23,31 @@ wordlist-dedup.
 
 ## Command line tool
 
+```commandline
+wordlist-dedup --help
+wordlist-dedup 0.1.2
+Michael Sasser <Michael@MichaelSasser.org>
+Deduplicate presorted wordlists.
+
+USAGE:
+    wordlist-dedup <SRC> [DEST]
+
+FLAGS:
+    -h, --help       Prints help information
+    -V, --version    Prints version information
+
+ARGS:
+    <SRC>     The presorted source file, wich may contains duplicated lines
+    <DEST>    The destination file, to write the deduplicated file to
+```
+
 wordlist-dedup as a pure commandline tool. Keep in mind, the file must be 
 sorted before running it. You can use GNU/coreutils `sort`, which does a fine
 job, even, when the RAM is limited. This means, the file can be larger then
 the available RAM. wordlist-dedup does barely use any RAM.
 You can use it to deduplicate a file like:
 
-```
+```commandline
 $ wordlist-dedup some_file_with_dups.txt new_file_to_write_to.txt
 ⠏ Done. Found 410 duplicates.
 ```
@@ -41,8 +59,8 @@ duplicate line.
 If you use it with only one argument like `file.ext`, it will name the 
 outputfile `file_uniq.ext`.
 
-Keep in mind, it was made for one job, to sort wordlists. It might work in 
-other scenarios.
+Keep in mind, it was made for one job, to deduplicate sorted wordlists. 
+It might work in different scenarios.
 
 If you like to use my scripts to dedup as many files as you like in one folder
 check out my 
