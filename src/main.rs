@@ -1,4 +1,4 @@
-use clap::{App, Arg};
+use clap::{crate_version, App, Arg};
 use indicatif::{ProgressBar, ProgressStyle};
 use std::ffi::OsStr;
 use std::fs::File;
@@ -19,7 +19,7 @@ fn remove_extension_from_filename(filename: &str) -> Option<&str> {
 
 fn main() -> std::io::Result<()> {
     let matches = App::new("wordlist-dedup")
-        .version("0.1.1")
+        .version(crate_version!())
         .author("Michael Sasser <Michael@MichaelSasser.org>")
         .about("Deduplicate presorted wordlists.")
         .arg(
