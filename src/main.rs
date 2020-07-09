@@ -64,7 +64,8 @@ fn main() -> std::io::Result<()> {
     }
 
     if dest_file == src_file {
-        println!("The source file must be different from the destination file.");
+        eprintln!("Error: The source file must be different from the destination file.");
+        std::process::exit(1)
     }
 
     // println!("Inputfile:  {}", src_file);
