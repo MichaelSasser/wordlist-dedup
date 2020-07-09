@@ -174,7 +174,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "wordlist-dedup"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "clap 2.33.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "indicatif 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
