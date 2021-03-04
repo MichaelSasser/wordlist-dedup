@@ -5,7 +5,7 @@ wordlist-dedup is a program written in rust to deduplicate wordlists. Duh.
 I tried to deduplicate lines of a huge wordlist (>80 GB) with GNU/coreutils 
 `uniq`. First everything seemed to be hunky dory. Before I deleted the original
 file I spotted the size of the deduplicated. It was about half of the original.
-In the firsthand I suspected about 5 % duplicates duplicates.
+In the firsthand I suspected about 5 % duplicates.
 
 To check this, I wrote a program to count the duplicates and Bingo! The
 original file had just a smidgen over 3 % of duplicates.
@@ -43,7 +43,7 @@ ARGS:
 
 wordlist-dedup as a pure commandline tool. Keep in mind, the file must be 
 sorted before running it. You can use GNU/coreutils `sort`, which does a fine
-job, even, when the RAM is limited. This means, the file can be larger then
+job, even, when the RAM is limited. This means, the file can be larger than
 the available RAM. wordlist-dedup does barely use any RAM.
 You can use it to deduplicate a file like:
 
