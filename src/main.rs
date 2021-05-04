@@ -51,7 +51,11 @@ fn main() -> std::io::Result<()> {
                 Some(t) => t,
                 None => "",
             };
-            new_dest_file = format!("{}_uniq.{}", out_file_stem, ext);
+            if ext.is_empty() {
+                new_dest_file = format!("{}_uniq", out_file_stem);
+            } else {
+                new_dest_file = format!("{}_uniq.{}", out_file_stem, ext);
+            }
             ""
         }
     };
@@ -107,6 +111,6 @@ fn main() -> std::io::Result<()> {
     }
     let msg = format!("Done. Found {} duplicates.", dups);
     buf_writer.flush().unwrap();
-    pb.finish_with_message(msg.as_str());
+    pb.finish_with_message(msg);
     Ok(())
 }

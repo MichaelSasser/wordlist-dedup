@@ -5,7 +5,7 @@ wordlist-dedup is a program written in rust to deduplicate wordlists. Duh.
 I tried to deduplicate lines of a huge wordlist (>80 GB) with GNU/coreutils 
 `uniq`. First everything seemed to be hunky dory. Before I deleted the original
 file I spotted the size of the deduplicated. It was about half of the original.
-In the firsthand I suspected about 5 % duplicates duplicates.
+In the firsthand I suspected about 5 % duplicates.
 
 To check this, I wrote a program to count the duplicates and Bingo! The
 original file had just a smidgen over 3 % of duplicates.
@@ -23,14 +23,32 @@ wordlist-dedup.
 
 ## Command line tool
 
+```commandline
+wordlist-dedup --help
+wordlist-dedup 0.1.2
+Michael Sasser <Michael@MichaelSasser.org>
+Deduplicate presorted wordlists.
+
+USAGE:
+    wordlist-dedup <SRC> [DEST]
+
+FLAGS:
+    -h, --help       Prints help information
+    -V, --version    Prints version information
+
+ARGS:
+    <SRC>     The presorted source file, wich may contains duplicated lines
+    <DEST>    The destination file, to write the deduplicated file to
+```
+
 wordlist-dedup as a pure commandline tool. Keep in mind, the file must be 
 sorted before running it. You can use GNU/coreutils `sort`, which does a fine
-job, even, when the RAM is limited. This means, the file can be larger then
+job, even, when the RAM is limited. This means, the file can be larger than
 the available RAM. wordlist-dedup does barely use any RAM.
 You can use it to deduplicate a file like:
 
-```
-$ wordlist-dedup some_file_with_dups.txt some_file_without_dups.txt
+```commandline
+$ wordlist-dedup some_file_with_dups.txt new_file_to_write_to.txt
 ⠏ Done. Found 410 duplicates.
 ```
 
@@ -41,8 +59,8 @@ duplicate line.
 If you use it with only one argument like `file.ext`, it will name the 
 outputfile `file_uniq.ext`.
 
-Keep in mind, it was made for one job, to sort wordlists. It might work in 
-other scenarios.
+Keep in mind, it was made for one job, to deduplicate sorted wordlists. 
+It might work in different scenarios.
 
 If you like to use my scripts to dedup as many files as you like in one folder
 check out my 
@@ -70,8 +88,8 @@ This repository uses the
 branching model by [Vincent Driessen](https://nvie.com/about/).
 It has two branches with infinite lifetime:
 
-* [master](https://github.com/MichaelSasser/matrixctl/tree/master)
-* [develop](https://github.com/MichaelSasser/matrixctl/tree/develop)
+* [master](https://github.com/MichaelSasser/wordlist-dedup/tree/master)
+* [develop](https://github.com/MichaelSasser/wordlist-dedup/tree/develop)
 
 The master branch gets updated on every release. The develop branch is the
 merging branch.
