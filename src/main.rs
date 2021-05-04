@@ -51,7 +51,11 @@ fn main() -> std::io::Result<()> {
                 Some(t) => t,
                 None => "",
             };
-            new_dest_file = format!("{}_uniq.{}", out_file_stem, ext);
+            if ext.is_empty() {
+                new_dest_file = format!("{}_uniq", out_file_stem);
+            } else {
+                new_dest_file = format!("{}_uniq.{}", out_file_stem, ext);
+            }
             ""
         }
     };
