@@ -107,6 +107,6 @@ fn main() -> std::io::Result<()> {
     }
     let msg = format!("Done. Found {} duplicates.", dups);
     buf_writer.flush().unwrap();
-    pb.finish_with_message(msg.as_str());
+    pb.finish_with_message(msg);
     Ok(())
 }
