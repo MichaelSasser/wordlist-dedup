@@ -1,4 +1,4 @@
-use clap::{crate_version, App, Arg};
+use clap::{crate_name, crate_version, App, Arg};
 use indicatif::{ProgressBar, ProgressStyle};
 use std::ffi::OsStr;
 use std::fs::File;
@@ -18,17 +18,17 @@ fn remove_extension_from_filename(filename: &str) -> Option<&str> {
 }
 
 fn main() -> std::io::Result<()> {
-    let matches = App::new("wordlist-dedup")
+    let matches = App::new(crate_name!())
         .version(crate_version!())
         .author("Michael Sasser <Michael@MichaelSasser.org>")
         .about("Deduplicate presorted wordlists.")
         .arg(
-            Arg::with_name("SRC")
+            Arg::new("SRC")
                 .required(true)
                 .help("The presorted source file, wich may contains duplicated lines"),
         )
         .arg(
-            Arg::with_name("DEST")
+            Arg::new("DEST")
                 .required(false)
                 .help("The destination file, to write the deduplicated file to"),
         )
