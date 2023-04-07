@@ -1,6 +1,9 @@
 use std::{
     fs::File,
-    io::{self, prelude::*},
+    io::{
+        self,
+        prelude::*,
+    },
     rc::Rc,
 };
 
@@ -29,11 +32,11 @@ impl Iterator for BufReader {
             Some(buf) => {
                 buf.clear();
                 buf
-            }
+            },
             None => {
                 self.buf = new_buf();
                 Rc::make_mut(&mut self.buf)
-            }
+            },
         };
 
         self.reader

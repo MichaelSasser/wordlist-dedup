@@ -1,5 +1,6 @@
 [package]
 name = "wordlist-dedup"
+description = "Deduplicate Pre-Sorted Wordlists"
 version = "0.1.4"
 authors = ["Michael Sasser <Michael@MichaelSasser.org>"]
 edition = "2021"
@@ -10,5 +11,13 @@ publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-indicatif = "0.16.2"
-clap = { version = "3.0.14", features = ["cargo"] }
+indicatif = "^0.17"
+clap = { version = "^4.2", features = ["cargo", "derive"] }
+anyhow = "1.0.70"
+
+[profile.release]
+strip = "symbols"
+lto = "fat"
+opt-level = 3
+codegen-units = 1
+incremental = false
