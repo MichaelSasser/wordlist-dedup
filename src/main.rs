@@ -1,28 +1,37 @@
-mod parser;
-mod reader;
+mod spinner;
 
 use {
-    anyhow::Result,
+    crate::spinner::Spinner,
     clap::Parser,
-    core::time,
-    indicatif::{
-        ProgressBar,
-        ProgressStyle,
-    },
-    parser::Cli,
+    itertools::Itertools,
     std::{
         ffi::OsStr,
         fs::File,
         io::{
+            BufRead,
+            BufReader,
             BufWriter,
             Write,
         },
-        path::Path,
-        rc::Rc,
+        path::{
+            Path,
+            PathBuf,
+        },
     },
 };
 
-fn main() -> Result<()> {
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+#[command(arg_required_else_help(true))]
+pub struct Cli {
+    /// The pre-sorted source file, wich may contains duplicated lines
+    pub src: PathBuf,
+
+    /// The destination file, to write the deduplicated file to
+    pub dest: Option<PathBuf>,
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
     let dest = cli.dest.unwrap_or_else(|| {
         let ext = cli.src.extension().and_then(OsStr::to_str).unwrap_or("");
@@ -48,44 +57,34 @@ fn main() -> Result<()> {
         std::process::exit(1)
     }
 
-    println!("Inputfile:  {:?}", cli.src);
-    println!("Outputfile: {:?}", dest);
+    println!("Deduplicating: {:?} 🠢 {:?}\n", cli.src, dest);
 
-    let buf_reader = reader::BufReader::open(cli.src)?;
+    let src_file = File::open(cli.src)?;
+    let src_reader = BufReader::new(src_file);
+
     let output = File::create(dest)?;
     let mut buf_writer = BufWriter::new(output);
-    let mut line_last: Rc<String> = Rc::new(String::from(""));
-    let mut dups: u64 = 0;
+    let mut duplicates_found: u64 = 0;
 
-    let pb = ProgressBar::new_spinner();
-    pb.enable_steady_tick(time::Duration::new(80, 0));
-    pb.set_style(
-        ProgressStyle::default_spinner()
-            // For more spinners check out the cli-spinners project:
-            // https://github.com/sindresorhus/cli-spinners/blob/master/spinners.json
-            .tick_strings(&["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
-            .template("{spinner:.blue} {msg}")?,
+    let mut spinner = Spinner::new(
+        ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"].to_vec(),
+        "Checking for duplicates...".to_owned(),
     );
-    pb.set_message("Checking for duplicates...");
 
-    for line in buf_reader {
-        let line_cur = match line {
-            Ok(t) => t,
-            Err(_) => {
-                continue;
-            },
-        };
-        if line_cur == line_last {
-            dups += 1;
-        // for debug purpose uncomment this line:
-        // println!("Found DUP: {:?} and {:?}", line_cur, line_last)
+    let it = src_reader.lines().map(|l| l.unwrap());
+
+    for (u, v) in it.tuple_windows() {
+        if u == v {
+            duplicates_found += 1;
+            // println!("Found DUP: {}", &u);
+            continue;
         } else {
-            write!(buf_writer, "{}", line_cur)?;
+            writeln!(buf_writer, "{}", u)?;
         }
-        line_last = line_cur;
     }
-    let msg = format!("Done. Found {} duplicates.", dups);
-    buf_writer.flush().unwrap();
-    pb.finish_with_message(msg);
+    buf_writer.flush()?;
+
+    spinner
+        .finish(Some(format!("🚀 Found {} duplicates)", duplicates_found)))?;
     Ok(())
 }

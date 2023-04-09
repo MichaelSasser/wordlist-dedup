@@ -11,9 +11,8 @@ publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-indicatif = "^0.17"
 clap = { version = "^4.2", features = ["cargo", "derive"] }
-anyhow = "1.0.70"
+itertools = "^0.10"
 
 [profile.release]
 strip = "symbols"
