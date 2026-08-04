@@ -1,6 +1,6 @@
 # wordlist-dedup
 
-wordlist-dedup is a program written in rust to deduplicate wordlists. Duh.
+wordlist-dedup is a program written in Rust to deduplicate wordlists. Duh.
 
 I've tried to deduplicate lines of a huge wordlist (>80 GB) with GNU/coreutils
 `uniq`. First everything seemed to be hunky dory. Before I deleted the original
@@ -14,11 +14,11 @@ Maybe I did something wrong or my PC was not able to handle the memory
 requirements of `uniq`. I don't know, why it needs that much memory and has a
 super low throughput. The wordlist must be sorted before using `uniq` anyway.
 Everything uniq has to do is compare line `n` with line `n-1`. If they are both
-the same, don't write one of them to another file. That simple.
+the same, don't write one of them to the output file. That simple.
 
 So, here is wordlist-dedup. It does exactly that. On my old laptop it writes
-roughly 400 MB/s of deduplicated output. When only counting the number of
-duplicates, it reads about 1.4 GB/s of data. Both with a line length of 200
+roughly 1 GiB/s of deduplicated output. When only counting the number of
+duplicates, it reads about 14 GiB/s of data. Both with a line length of 200
 utf-8 characters.
 
 I use it together with a script, that first runs GNU/coreutils `sort` (which
@@ -45,19 +45,25 @@ Options:
 Please keep in mind, the file must be sorted beforehand. Otherwise, it may not
 find duplicates. You can use GNU/coreutils `sort`, which does a fine job, even,
 when the file is larger than the available memory. wordlist-dedup uses what it
-gets of memory. If there is a bunch of memory available, it might use it (to an extend). If there is barely any memory left, it will work as well. Just slower.
+gets of memory. If there is a bunch of memory available, it might use it (to an
+extend). If there is barely any memory left, it will work as well. Just slower.
 
 You can use it to deduplicate a file like:
 
 ```commandline
 $ wordlist-dedup some_file_with_dups.txt new_file_to_write_to.txt
-  ⠏ Checking for duplicates... (0.8 s)
-  🚀 Found 410 duplicates in 2.1 s.
+── Analyzing ───────────────────────────────────────────────────────────────────
+
+[0s] ███████████████████████████████████ 1.00 GiB/1.00 GiB (13.52 GiB/s, 0s)
+  ✔  Found 5 duplicates
+
+── Writing ─────────────────────────────────────────────────────────────────────
+
+[1s] ███████████████████████████████████ 1.00 GiB/1.00 GiB (1.06 GiB/s, 0s)
+  ✔  Written 5368711 unique lines to new_file_to_write_to.txt
 ```
 
-During operation it outputs a spinner in the front, to signal, that
-that the program is still running. When it is done, it tells you the number of
-duplicate line.
+During operation it outputs a progressbar and stats.
 
 If you use it with only one argument like `file.ext`, it names the destination
 file `file_uniq.ext`.
@@ -71,12 +77,11 @@ check out my
 
 ## Installation
 
-Make sure you have a recent version of a Rust compiler installed.
-To build it, run: `cargo build --release`.
+Make sure you have a recent version of a Rust compiler installed. To build it,
+run: `cargo build --release`.
 
 The binary is now located in the "target" folder, which was created while
-building the program:
-`target/release/wordlist-dedup`.
+building the program: `target/release/wordlist-dedup`.
 
 If you are using a GNU/Linux based operating system, you can also use the
 already build binary by the CD workflow. Head over to the
@@ -101,5 +106,5 @@ merging branch.
 
 ## License
 
-Copyright &copy; 2020-2023 Michael Sasser <Info@MichaelSasser.org>. Released
+Copyright &copy; 2020-2026 Michael Sasser <Info@MichaelSasser.org>. Released
 under the GPLv3 license.
