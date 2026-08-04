@@ -1,17 +1,16 @@
-#use_small_heuristics = "Max"
-max_width = 79
+max_width = 100
+use_small_heuristics = "Max"
+
 indent_style = "Block"
 reorder_imports = true
-edition = "2021"
-format_strings = true
-hex_literal_case = "Upper"
-imports_layout = "Vertical"
+format_strings = false
+hex_literal_case = "Lower"
+imports_layout = "Mixed"
 match_block_trailing_comma = true
-imports_granularity = "One"
+imports_granularity = "Module"
 newline_style = "Unix"
 reorder_impl_items = true
 group_imports = "StdExternalCrate"
 reorder_modules = true
-# struct_field_align_threshold = 20
 use_field_init_shorthand = true
 use_try_shorthand = true

@@ -1,23 +1,14 @@
-use {
-    clap::Parser,
-    indicatif::{
-        ProgressBar,
-        ProgressStyle,
-    },
-    memchr::memchr,
-    memmap2::Mmap,
-    rayon::prelude::*,
-    std::{
-        ffi::OsStr,
-        fs::File,
-        io,
-        os::unix::fs::FileExt,
-        path::{
-            Path,
-            PathBuf,
-        },
-    },
-};
+use std::ffi::OsStr;
+use std::fs::File;
+use std::io;
+use std::os::unix::fs::FileExt;
+use std::path::{Path, PathBuf};
+
+use clap::Parser;
+use indicatif::{ProgressBar, ProgressStyle};
+use memchr::memchr;
+use memmap2::Mmap;
+use rayon::prelude::*;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -52,16 +43,8 @@ struct ChunkOffsets {
 }
 
 impl ChunkOffsets {
-    fn new(
-        total_dups: u64,
-        total_output_size: u64,
-        total_unique_lines: u64,
-    ) -> Self {
-        Self {
-            total_dups,
-            total_output_size,
-            total_unique_lines,
-        }
+    fn new(total_dups: u64, total_output_size: u64, total_unique_lines: u64) -> Self {
+        Self { total_dups, total_output_size, total_unique_lines }
     }
 }
 
@@ -103,11 +86,7 @@ fn compute_chunks(data: &[u8], num_threads: usize) -> Vec<ChunkInfo> {
             }
         }
 
-        chunks.push(ChunkInfo {
-            start,
-            end,
-            ..Default::default()
-        });
+        chunks.push(ChunkInfo { start, end, ..Default::default() });
         start = end;
     }
     chunks
@@ -200,14 +179,14 @@ fn stitch_chunks(chunks: &mut [ChunkInfo]) -> ChunkOffsets {
     let mut current_offset: u64 = 0;
 
     for i in 0..chunks.len() {
-        if i > 0 && !chunks[i].first_line.is_empty() {
-            if chunks[i - 1].last_line == chunks[i].first_line {
-                chunks[i].drop_first = true;
-                chunks[i].output_size -=
-                    (chunks[i].first_line.len() as u64) + 1;
-                chunks[i].local_lines -= 1;
-                total_dups += 1;
-            }
+        if i > 0
+            && !chunks[i].first_line.is_empty()
+            && chunks[i - 1].last_line == chunks[i].first_line
+        {
+            chunks[i].drop_first = true;
+            chunks[i].output_size -= (chunks[i].first_line.len() as u64) + 1;
+            chunks[i].local_lines -= 1;
+            total_dups += 1;
         }
         chunks[i].offset = current_offset;
         current_offset += chunks[i].output_size;
@@ -239,16 +218,15 @@ fn write_output(
 
         let mut buf: Vec<u8> = Vec::with_capacity(1 << 20);
 
-        let flush_buf =
-            |buf: &mut Vec<u8>, offset: &mut u64| -> io::Result<()> {
-                if !buf.is_empty() {
-                    output_file.write_all_at(buf, *offset)?;
-                    pb.inc(buf.len() as u64);
-                    *offset += buf.len() as u64;
-                    buf.clear();
-                }
-                Ok(())
-            };
+        let flush_buf = |buf: &mut Vec<u8>, offset: &mut u64| -> io::Result<()> {
+            if !buf.is_empty() {
+                output_file.write_all_at(buf, *offset)?;
+                pb.inc(buf.len() as u64);
+                *offset += buf.len() as u64;
+                buf.clear();
+            }
+            Ok(())
+        };
 
         while let Some(pos) = memchr(b'\n', &chunk_data[start..]) {
             let line = strip_eol(&chunk_data[start..start + pos]);
@@ -306,11 +284,7 @@ fn write_output(
 fn resolve_dest_path(cli: &Cli) -> PathBuf {
     cli.dest.clone().unwrap_or_else(|| {
         let ext = cli.src.extension().and_then(OsStr::to_str).unwrap_or("");
-        let stem = cli
-            .src
-            .file_stem()
-            .and_then(OsStr::to_str)
-            .unwrap_or("file");
+        let stem = cli.src.file_stem().and_then(OsStr::to_str).unwrap_or("file");
         if ext.is_empty() {
             Path::new(&format!("{}_uniq", stem)).to_path_buf()
         } else {
@@ -351,10 +325,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let chunk_offsets = stitch_chunks(&mut chunks);
 
     pb_analyze.finish();
-    println!(
-        "\n  \x1b[32m✔\x1b[0m  Found {} duplicates\n",
-        chunk_offsets.total_dups
-    );
+    println!("\n  \x1b[32m✔\x1b[0m  Found {} duplicates\n", chunk_offsets.total_dups);
 
     // Writing
     if !cli.count {
@@ -373,13 +344,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let pb_write = ProgressBar::new(chunk_offsets.total_output_size);
         pb_write.set_style(style.clone());
 
-        write_output(
-            &chunks,
-            data,
-            chunk_offsets.total_output_size,
-            &dest,
-            &pb_write,
-        )?;
+        write_output(&chunks, data, chunk_offsets.total_output_size, &dest, &pb_write)?;
 
         pb_write.finish();
         println!(
@@ -394,11 +359,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 #[cfg(test)]
 mod tests {
-    use {
-        super::*,
-        indicatif::ProgressBar,
-        tempfile::tempdir,
-    };
+    use indicatif::ProgressBar;
+    use tempfile::tempdir;
+
+    use super::*;
 
     /// Helper function to run the full pipeline on in-memory data
     /// and return (duplicates_found, output_file_contents).
@@ -413,14 +377,7 @@ mod tests {
         let temp_dir = tempdir().unwrap();
         let dest_path = temp_dir.path().join("output.txt");
 
-        write_output(
-            &chunks,
-            data,
-            chunk_offsets.total_output_size,
-            &dest_path,
-            &pb,
-        )
-        .unwrap();
+        write_output(&chunks, data, chunk_offsets.total_output_size, &dest_path, &pb).unwrap();
 
         let output_data = std::fs::read(&dest_path).unwrap();
         (chunk_offsets.total_dups, output_data)
@@ -528,21 +485,13 @@ mod tests {
 
     #[test]
     fn test_resolve_dest_path_with_extension() {
-        let cli = Cli {
-            src: PathBuf::from("words.txt"),
-            dest: None,
-            count: false,
-        };
+        let cli = Cli { src: PathBuf::from("words.txt"), dest: None, count: false };
         assert_eq!(resolve_dest_path(&cli), PathBuf::from("words_uniq.txt"));
     }
 
     #[test]
     fn test_resolve_dest_path_without_extension() {
-        let cli = Cli {
-            src: PathBuf::from("words"),
-            dest: None,
-            count: false,
-        };
+        let cli = Cli { src: PathBuf::from("words"), dest: None, count: false };
         assert_eq!(resolve_dest_path(&cli), PathBuf::from("words_uniq"));
     }
 
@@ -553,10 +502,7 @@ mod tests {
             dest: Some(PathBuf::from("custom_output.txt")),
             count: false,
         };
-        assert_eq!(
-            resolve_dest_path(&cli),
-            PathBuf::from("custom_output.txt")
-        );
+        assert_eq!(resolve_dest_path(&cli), PathBuf::from("custom_output.txt"));
     }
 
     #[test]
